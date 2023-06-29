@@ -1,12 +1,12 @@
-const Client = require("../entities/Client");
+const ClientRepository = require("../repositories/clientRepository");
 
 class ClientController {
   async create(req, res) {
     try {
+      console.log(req.body);
       const { name, document, email, phone } = req.body;
-      const client = new Client({ name, document, email, phone });
-      // Salvar o cliente no banco de dados ou executar outras operações necessárias
-      // ...
+      const clientData = { name, document, email, phone };
+      const client = await ClientRepository.create(clientData);
       return res.status(201).json(client);
     } catch (error) {
       return res.status(500).json({ error: "Failed to create client" });
@@ -15,8 +15,7 @@ class ClientController {
 
   async getAll(req, res) {
     try {
-      // Obter todos os clientes do banco de dados ou executar outras operações necessárias
-      // ...
+      const clients = await ClientRepository.getAll();
       return res.status(200).json(clients);
     } catch (error) {
       return res.status(500).json({ error: "Failed to fetch clients" });
@@ -26,8 +25,7 @@ class ClientController {
   async getById(req, res) {
     try {
       const { id } = req.params;
-      // Obter o cliente pelo ID do banco de dados ou executar outras operações necessárias
-      // ...
+      const client = await ClientRepository.getById(id);
       if (!client) {
         return res.status(404).json({ error: "Client not found" });
       }
@@ -41,8 +39,8 @@ class ClientController {
     try {
       const { id } = req.params;
       const { name, document, email, phone } = req.body;
-      // Atualizar o cliente no banco de dados ou executar outras operações necessárias
-      // ...
+      const clientData = { name, document, email, phone };
+      const updatedClient = await ClientRepository.update(id, clientData);
       if (!updatedClient) {
         return res.status(404).json({ error: "Client not found" });
       }
@@ -55,8 +53,7 @@ class ClientController {
   async delete(req, res) {
     try {
       const { id } = req.params;
-      // Excluir o cliente do banco de dados ou executar outras operações necessárias
-      // ...
+      const deletedClient = await ClientRepository.delete(id);
       if (!deletedClient) {
         return res.status(404).json({ error: "Client not found" });
       }

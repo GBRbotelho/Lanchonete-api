@@ -1,4 +1,4 @@
-export class Client {
+class Client {
   constructor(props) {
     this.id = props.id;
     this.name = props.name;
@@ -8,3 +8,5 @@ export class Client {
     this.status = props.status || "active";
   }
 }
+
+module.exports = Client;

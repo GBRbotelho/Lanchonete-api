@@ -1,4 +1,4 @@
-export class Product {
+class Product {
   constructor(props) {
     this.id = props.id;
     this.name = props.name;
@@ -8,3 +8,5 @@ export class Product {
     this.lanchoneteId = props.lanchoneteId;
   }
 }
+
+module.exports = Product;
