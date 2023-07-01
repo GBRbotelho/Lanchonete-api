@@ -1,12 +1,22 @@
+// importação dos repositories
+const UserRepository = require("../repositories/userRepository");
 const ClientRepository = require("../repositories/clientRepository");
+
+//importação dos casos de uso
+const CreateClient = require("../useCases/client/CreateClient");
+const GetAllClients = require("../useCases/client/GetAllClients");
+const GetClientById = require("../useCases/client/GetClientById");
+const UpdateClient = require("../useCases/client/UpdateClient");
+const DeleteClient = require("../useCases/client/DeleteClient");
 
 class ClientController {
   async create(req, res) {
     try {
-      console.log(req.body);
-      const { name, document, email, phone } = req.body;
-      const clientData = { name, document, email, phone };
-      const client = await ClientRepository.create(clientData);
+      const { username, password, email } = req.body;
+      const userData = { username, password, email };
+      const createClient = new CreateClient(UserRepository, ClientRepository);
+      const client = await createClient.execute(userData);
+
       return res.status(201).json(client);
     } catch (error) {
       return res.status(500).json({ error: "Failed to create client" });
@@ -15,7 +25,8 @@ class ClientController {
 
   async getAll(req, res) {
     try {
-      const clients = await ClientRepository.getAll();
+      const getAllClients = new GetAllClients(ClientRepository);
+      const clients = await getAllClients.execute();
       return res.status(200).json(clients);
     } catch (error) {
       return res.status(500).json({ error: "Failed to fetch clients" });
@@ -25,10 +36,8 @@ class ClientController {
   async getById(req, res) {
     try {
       const { id } = req.params;
-      const client = await ClientRepository.getById(id);
-      if (!client) {
-        return res.status(404).json({ error: "Client not found" });
-      }
+      const getClientById = new GetClientById(ClientRepository);
+      const client = await getClientById.execute(id);
       return res.status(200).json(client);
     } catch (error) {
       return res.status(500).json({ error: "Failed to fetch client" });
@@ -38,12 +47,16 @@ class ClientController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { name, document, email, phone } = req.body;
-      const clientData = { name, document, email, phone };
-      const updatedClient = await ClientRepository.update(id, clientData);
+      const { name, document, phone } = req.body;
+      const clientData = { name, document, phone };
+
+      const updateClient = new UpdateClient(ClientRepository);
+      const updatedClient = await updateClient.execute(id, clientData);
+
       if (!updatedClient) {
         return res.status(404).json({ error: "Client not found" });
       }
+
       return res.status(200).json(updatedClient);
     } catch (error) {
       return res.status(500).json({ error: "Failed to update client" });
@@ -53,10 +66,14 @@ class ClientController {
   async delete(req, res) {
     try {
       const { id } = req.params;
-      const deletedClient = await ClientRepository.delete(id);
-      if (!deletedClient) {
+
+      const deleteClient = new DeleteClient(ClientRepository, UserRepository);
+      const deleted = await deleteClient.execute(id);
+
+      if (!deleted) {
         return res.status(404).json({ error: "Client not found" });
       }
+
       return res.status(200).json({ message: "Client deleted successfully" });
     } catch (error) {
       return res.status(500).json({ error: "Failed to delete client" });

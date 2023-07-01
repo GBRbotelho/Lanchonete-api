@@ -3,18 +3,22 @@ const mongoose = require("mongoose");
 const clientSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
+    default: null,
   },
   document: {
     type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
+    required: false,
+    default: null,
   },
   phone: {
     type: String,
+    required: false,
+    default: null,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 });
