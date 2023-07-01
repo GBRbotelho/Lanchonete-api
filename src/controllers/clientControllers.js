@@ -19,7 +19,14 @@ class ClientController {
 
       return res.status(201).json(client);
     } catch (error) {
-      return res.status(500).json({ error: "Failed to create client" });
+      if (
+        error.message.includes("Email already exists") ||
+        error.message.includes("Username already exists")
+      ) {
+        return res.status(400).json({ error: error.message });
+      } else {
+        return res.status(500).json({ error: "Failed to create client" });
+      }
     }
   }
 
@@ -76,7 +83,11 @@ class ClientController {
 
       return res.status(200).json({ message: "Client deleted successfully" });
     } catch (error) {
-      return res.status(500).json({ error: "Failed to delete client" });
+      if (error.message === "Client not found") {
+        return res.status(404).json({ error: error.message });
+      } else {
+        return res.status(500).json({ error: "Failed to delete client" });
+      }
     }
   }
 }

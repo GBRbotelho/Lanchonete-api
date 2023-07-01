@@ -7,9 +7,8 @@ class DeleteClient {
   async execute(clientId) {
     try {
       const client = await this.clientRepository.getById(clientId);
-
       if (!client) {
-        throw new Error("Client not found");
+        throw { message: "Client not found" };
       }
 
       // Excluir o cliente
@@ -20,7 +19,7 @@ class DeleteClient {
 
       return true;
     } catch (error) {
-      throw new Error("Failed to delete client");
+      throw { message: error.message };
     }
   }
 }
