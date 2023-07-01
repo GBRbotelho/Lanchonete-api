@@ -23,6 +23,10 @@ class ProductRepository {
   async delete(productId) {
     return await Product.findByIdAndDelete(productId);
   }
+
+  async findByName(name) {
+    return await Product.findOne({ name });
+  }
 }
 
 module.exports = new ProductRepository();
