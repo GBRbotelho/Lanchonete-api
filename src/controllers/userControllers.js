@@ -49,10 +49,8 @@ class UserController {
   async login(req, res) {
     try {
       const { usernameOrEmail, password } = req.body;
-
       const loginUser = new LoginUser(UserRepository);
       const token = await loginUser.execute(usernameOrEmail, password);
-
       return res.status(200).json({ token });
     } catch (error) {
       return res.status(401).json({ error: "Invalid credentials" });

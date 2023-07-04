@@ -7,10 +7,8 @@ class LoginUser {
     this.userRepository = userRepository;
   }
 
-  async execute(credentials) {
+  async execute(usernameOrEmail, password) {
     try {
-      const { usernameOrEmail, password } = credentials;
-
       // Procurar usuário por email ou username
       const user = await this.userRepository.findByUsernameOrEmail(
         usernameOrEmail
@@ -31,6 +29,12 @@ class LoginUser {
       const token = jwt.sign({ userId: user._id }, secretKey, {
         expiresIn: "1h",
       });
+
+      user.token = token;
+      user.tokenExpiration = new Date(Date.now() + 3600000);
+
+      // Atualizar o documento do usuário no banco de dados
+      await this.userRepository.update(user._id, user);
 
       // Retornar token
       return token;
