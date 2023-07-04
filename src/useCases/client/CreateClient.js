@@ -1,3 +1,5 @@
+const { hashPassword } = require("../../infra/bcryptConfig");
+
 class CreateClient {
   constructor(userRepository, clientRepository) {
     this.userRepository = userRepository;
@@ -6,7 +8,7 @@ class CreateClient {
 
   async execute(userData) {
     try {
-      const { username, email } = userData;
+      const { username, email, password } = userData;
 
       // Verifica se já existe um usuário com o mesmo email
       const existingUserByEmail = await this.userRepository.findByEmail(email);
@@ -22,8 +24,15 @@ class CreateClient {
         throw { message: "Username already exists" };
       }
 
+      // Hash da senha
+      const hashedPassword = await hashPassword(password);
+
       // Cria o usuário no banco de dados
-      const newUser = await this.userRepository.create(userData);
+      const newUser = await this.userRepository.create({
+        username,
+        email,
+        password: hashedPassword,
+      });
 
       // Cria o cliente no banco de dados associado ao userID do usuário
       const newClient = await this.clientRepository.create({
