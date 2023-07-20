@@ -8,6 +8,7 @@ const clientRepository = require("../repositories/clientRepository");
 const orderRepository = require("../repositories/orderRepository");
 const productRepository = require("../repositories/productRepository");
 
+const { getIo } = require("../infra/websocketConfig");
 class OrderController {
   async create(req, res) {
     try {
@@ -29,7 +30,7 @@ class OrderController {
       const { id } = req.params;
       const updatedData = req.body;
       const updateOrder = new UpdateOrder(orderRepository, productRepository);
-      const updatedOrder = await updateOrder.execute(id, updatedData);
+      const updatedOrder = await updateOrder.execute(id, updatedData, getIo());
       return res.status(200).json(updatedOrder);
     } catch (error) {
       return res.status(500).json({ error: "Failed to update order" });

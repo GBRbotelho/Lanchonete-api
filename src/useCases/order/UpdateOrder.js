@@ -1,9 +1,8 @@
-// updateOrder.js
-
 class UpdateOrder {
-  constructor(orderRepository, productRepository) {
+  constructor(orderRepository, productRepository, io) {
     this.orderRepository = orderRepository;
     this.productRepository = productRepository;
+    this.io = io; // Armazene a instância do Socket.io como uma propriedade da classe
   }
 
   async execute(orderId, updatedData) {
@@ -35,8 +34,22 @@ class UpdateOrder {
         updatedData
       );
 
+      // Verificar se o novo status é "Pronto" ou "Entregue"
+      if (
+        updatedData.status === "Em andamento" ||
+        updatedData.status === "Pronto" ||
+        updatedData.status === "Entregue"
+      ) {
+        // Enviar evento WebSocket para notificar os clientes sobre a atualização do pedido
+        this.io.emit("orderUpdated", {
+          orderId,
+          newStatus: updatedData.status,
+        });
+      }
+
       return updatedOrder;
     } catch (error) {
+      console.log(error);
       throw new Error("Failed to update order");
     }
   }
